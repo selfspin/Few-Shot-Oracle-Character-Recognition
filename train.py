@@ -29,6 +29,7 @@ parser.add_argument('--hdim', default=256, type=int)
 parser.add_argument('--depth', default=16, type=int)
 parser.add_argument('--psize', default=2, type=int)
 parser.add_argument('--conv-ks', default=5, type=int)
+parser.add_argument('--enlarge', default=0, type=int)
 
 parser.add_argument('--wd', default=0.005, type=float)
 parser.add_argument('--clip-norm', action='store_true')
@@ -52,34 +53,24 @@ if args.device != 'cpu':
     torch.backends.cudnn.benchmark = False
 
 train_transform = transforms.Compose([
-    transforms.Resize((224, 224))
-    # transforms.RandomResizedCrop(32, scale=(args.scale, 1.0), ratio=(1.0, 1.0)),
-    # transforms.RandomHorizontalFlip(p=0.5),
-    # transforms.RandAugment(num_ops=args.ra_n, magnitude=args.ra_m),
-    # transforms.ColorJitter(args.jitter, args.jitter, args.jitter),
-    # transforms.ToTensor(),
-    # transforms.Normalize(cifar10_mean, cifar10_std),
-    # transforms.RandomErasing(p=args.reprob)
-])
-
-test_transform = transforms.Compose([
-    transforms.Resize((224, 224))
-    # transforms.ToTensor(),
-    # transforms.Normalize(, )
+    transforms.RandomResizedCrop(244, scale=(args.scale, 1.0), ratio=(1.0, 1.0)),
+    transforms.RandAugment(num_ops=args.ra_n, magnitude=args.ra_m),
+    transforms.ColorJitter(args.jitter, args.jitter, args.jitter),
+    transforms.RandomErasing(p=args.reprob)
 ])
 
 print("Loading training data ...")
-trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=test_transform)
+trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=train_transform, enlarge=args.enlarge)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size,
                                           shuffle=True, num_workers=args.workers)
 
 print("Loading testing data ...")
-testset = data.dataset.OracleFS(dataset_type='test', shot=args.shot, transform=test_transform)
+testset = data.dataset.OracleFS(dataset_type='test', shot=args.shot)
 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,
                                          shuffle=False, num_workers=args.workers)
 
 # model = torchvision.models.resnet18(pretrained=True)
-model = torchvision.models.resnet18(pretrained=False)
+model = torchvision.models.resnet18(pretrained=True)
 num_feature = model.fc.in_features
 model.fc = torch.nn.Linear(num_feature, 200)
 # model = timm.create_model('vit_base_patch16_224', pretrained=True, num_classes=200)
