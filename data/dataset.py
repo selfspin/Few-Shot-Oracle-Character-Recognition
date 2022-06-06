@@ -48,7 +48,9 @@ class OracleFS(Dataset):
 
         if self.Normalize:
             m, s = get_mean_std(self.type, self.data)
-            norm = torchvision.transforms.Normalize(m, s)
+            norm = transforms.Compose([torchvision.transforms.Normalize(m, s),
+                                       # transforms.RandomErasing(p=0.2)
+                                       ])
             for i in range(len(self.data)):
                 self.data[i][0] = norm(self.data[i][0])
 

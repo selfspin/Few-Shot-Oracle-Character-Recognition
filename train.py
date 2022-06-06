@@ -54,22 +54,21 @@ if args.device != 'cpu':
 
 train_transform = transforms.Compose([
     transforms.RandomResizedCrop(244, scale=(args.scale, 1.0), ratio=(1.0, 1.0)),
-    transforms.ColorJitter(args.jitter, args.jitter, args.jitter),
     transforms.RandAugment(num_ops=args.ra_n, magnitude=args.ra_m),
+    transforms.ColorJitter(args.jitter, args.jitter, args.jitter),
     torchvision.transforms.ToTensor(),
-    transforms.RandomErasing(p=args.reprob)
 ])
 
 test_transfrom = transforms.Compose([
     transforms.Resize((244, 244)),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.84056849, 0.84056849, 0.84056849],
-                         std=[0.30429188, 0.30429188, 0.30429188]),
+    # transforms.Normalize(mean=[0.84056849, 0.84056849, 0.84056849],
+    #                      std=[0.30429188, 0.30429188, 0.30429188]),
 ])
 
 print("Loading training data ...")
 trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=train_transform,
-                                 enlarge=args.enlarge, Normalize=True)
+                                 enlarge=args.enlarge, Normalize=False)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size,
                                           shuffle=True, num_workers=args.workers)
 
