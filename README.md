@@ -10,12 +10,9 @@ Fudan NNDL Final Project
 │   ├── getclass.py
 │   ├── Oracle-50K
 │   ├── oracle_fs
-│   ├── oracle_source
-│   └── __pycache__
+│   └── oracle_source
 ├── output
 │   └── 1_shot.jpg
-├── __pycache__
-│   └── io.cpython-39.pyc
 ├── test.py
 ├── train.py
 ├── try.py
