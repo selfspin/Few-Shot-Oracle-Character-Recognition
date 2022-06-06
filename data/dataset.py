@@ -6,7 +6,7 @@ import torch
 
 
 class OracleFS(Dataset):
-    def __init__(self, dataset_type, shot=1):
+    def __init__(self, dataset_type, shot=1, transform=None):
         """
         dataset_type: ['train', 'test']
         """
@@ -15,6 +15,7 @@ class OracleFS(Dataset):
         self.class_to_oracle = np.load('data/oracle_fs/img/class_to_oracle.npy', allow_pickle=True).item()
         self.oracle_to_class = np.load('data/oracle_fs/img/oracle_to_class.npy', allow_pickle=True).item()
         self.data = []
+        self.transform = transform
         for oracle in self.oracle_to_class.keys():
             path = os.path.join(self.root, oracle)
             files = os.listdir(path)
@@ -23,7 +24,10 @@ class OracleFS(Dataset):
                     img = Image.open(os.path.join(path, file))
                     img = np.array(img.convert('RGB'))
                     img = img.transpose((2, 0, 1))
-                    self.data.append([torch.tensor(img).to(torch.float32), self.oracle_to_class[oracle]])
+                    img = torch.tensor(img).to(torch.float32)
+                    if self.transform is not None:
+                        img = self.transform(img)
+                    self.data.append([img, self.oracle_to_class[oracle]])
 
     def __getitem__(self, index):
         return self.data[index][0], self.data[index][1]
