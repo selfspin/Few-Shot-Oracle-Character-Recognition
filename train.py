@@ -17,7 +17,7 @@ import data.dataset
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--batch-size', default=10, type=int)
+parser.add_argument('--batch-size', default=200, type=int)
 parser.add_argument('--shot', default=1, type=int)
 parser.add_argument('--scale', default=1, type=float)
 parser.add_argument('--reprob', default=0.2, type=float)
@@ -29,10 +29,10 @@ parser.add_argument('--hdim', default=256, type=int)
 parser.add_argument('--depth', default=16, type=int)
 parser.add_argument('--psize', default=2, type=int)
 parser.add_argument('--conv-ks', default=5, type=int)
-parser.add_argument('--enlarge', default=0, type=int)
+parser.add_argument('--enlarge', default=8, type=int)
 
 parser.add_argument('--wd', default=0.005, type=float)
-parser.add_argument('--clip-norm', action='store_true')
+parser.add_argument('--clip-norm', default=True, action='store_true')
 parser.add_argument('--epochs', default=200, type=int)
 parser.add_argument('--lr-max', default=0.001, type=float)
 parser.add_argument('--workers', default=2, type=int)
@@ -54,18 +54,27 @@ if args.device != 'cpu':
 
 train_transform = transforms.Compose([
     transforms.RandomResizedCrop(244, scale=(args.scale, 1.0), ratio=(1.0, 1.0)),
-    transforms.RandAugment(num_ops=args.ra_n, magnitude=args.ra_m),
     transforms.ColorJitter(args.jitter, args.jitter, args.jitter),
+    transforms.RandAugment(num_ops=args.ra_n, magnitude=args.ra_m),
+    torchvision.transforms.ToTensor(),
     transforms.RandomErasing(p=args.reprob)
 ])
 
+test_transfrom = transforms.Compose([
+    transforms.Resize((244, 244)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.84056849, 0.84056849, 0.84056849],
+                         std=[0.30429188, 0.30429188, 0.30429188]),
+])
+
 print("Loading training data ...")
-trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=train_transform, enlarge=args.enlarge)
+trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=train_transform,
+                                 enlarge=args.enlarge, Normalize=True)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size,
                                           shuffle=True, num_workers=args.workers)
 
 print("Loading testing data ...")
-testset = data.dataset.OracleFS(dataset_type='test', shot=args.shot)
+testset = data.dataset.OracleFS(dataset_type='test', shot=args.shot, transform=test_transfrom, Normalize=False)
 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,
                                          shuffle=False, num_workers=args.workers)
 
