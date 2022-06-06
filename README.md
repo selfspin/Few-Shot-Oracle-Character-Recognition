@@ -21,3 +21,9 @@ Fudan NNDL Final Project
 ├── try.py
 └── visualize.py
 ```
+
+## 运行
+
+先运行`data/getclass.py`将每个字对应类别
+
+再运行`train.py`
