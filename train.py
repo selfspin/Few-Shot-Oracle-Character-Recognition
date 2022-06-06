@@ -9,6 +9,7 @@ import argparse
 import os
 import random
 from tqdm import tqdm
+import timm
 import matplotlib.pyplot as plt
 import data.dataset
 
@@ -29,7 +30,7 @@ parser.add_argument('--conv-ks', default=5, type=int)
 
 parser.add_argument('--wd', default=0.005, type=float)
 parser.add_argument('--clip-norm', action='store_true')
-parser.add_argument('--epochs', default=20, type=int)
+parser.add_argument('--epochs', default=100, type=int)
 parser.add_argument('--lr-max', default=0.001, type=float)
 parser.add_argument('--workers', default=2, type=int)
 
@@ -56,15 +57,19 @@ testset = data.dataset.OracleFS(dataset_type='test', shot=args.shot)
 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,
                                          shuffle=False, num_workers=args.workers)
 
-model = torchvision.models.resnet18(pretrained=True)
-num_feature = model.fc.in_features
-model.fc = torch.nn.Linear(num_feature, 200)
+# model = torchvision.models.resnet18(pretrained=True)
+# num_feature = model.fc.in_features
+# model.fc = torch.nn.Linear(num_feature, 200)
+model = timm.create_model('vit_base_patch16_224', pretrained=True, num_classes=200)
+for name, param in model.named_parameters():
+    if 'head' not in name:
+        param.requires_grad = False
 model.cuda()
 
 # lr_schedule = lambda t: np.interp([t], [0, args.epochs * 2 // 5, args.epochs * 4 // 5, args.epochs],
 #                                   [0, args.lr_max, args.lr_max / 20.0, 0])[0]
 
-opt = optim.Adam(model.parameters(), lr=args.lr_max)
+opt = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr_max)
 criterion = nn.CrossEntropyLoss()
 scaler = torch.cuda.amp.GradScaler()
 
@@ -74,7 +79,7 @@ lr_list = []
 for epoch in range(args.epochs):
     start = time.time()
     train_loss, train_acc, n = 0, 0, 0
-    for i, (X, y) in enumerate(trainloader):
+    for i, (X, y) in enumerate(tqdm(trainloader, ncols=0)):
         model.train()
         X = F.interpolate(X, size=(224, 224), mode='bilinear')
         X, y = X.cuda(), y.cuda()
