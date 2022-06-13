@@ -11,16 +11,18 @@ import random
 import torch.backends.cudnn
 from torchvision import transforms
 from tqdm import tqdm
-import timm
+
 import matplotlib.pyplot as plt
 import data.dataset
-# from loss_functions import ArcMarginProduct, FocalLoss
-from torchtoolbox.nn.metric_loss import ArcLoss
-from torchtoolbox.nn.loss import FocalLoss
+from torch.autograd import Variable
+import pickle
+import data.loading
+
+from torchtoolbox.tools import cutmix_data, mixup_criterion
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--batch-size', default=200, type=int)
+parser.add_argument('--batch-size', default=100, type=int)
 parser.add_argument('--shot', default=1, type=int)
 parser.add_argument('--scale', default=1, type=float)
 parser.add_argument('--reprob', default=0.2, type=float)
@@ -58,21 +60,16 @@ if args.device != 'cpu':
 train_transform = transforms.Compose([
     transforms.RandomResizedCrop(244, scale=(args.scale, 1.0), ratio=(1.0, 1.0)),
     transforms.RandomHorizontalFlip(p=0.5),
+    # transforms.RandomVerticalFlip(p=0.5),
     transforms.RandAugment(num_ops=args.ra_n, magnitude=args.ra_m),
     transforms.ColorJitter(args.jitter, args.jitter, args.jitter),
-    torchvision.transforms.ToTensor(),
-])
-
-basic_transform = transforms.Compose([
-    transforms.Resize(244),
+    # Cutout(),
     torchvision.transforms.ToTensor(),
 ])
 
 test_transfrom = transforms.Compose([
     transforms.Resize((244, 244)),
     transforms.ToTensor(),
-    # transforms.Normalize(mean=[0.84056849, 0.84056849, 0.84056849],
-    #                      std=[0.30429188, 0.30429188, 0.30429188]),
 ])
 
 print("Loading training data ...")
@@ -86,28 +83,20 @@ testset = data.dataset.OracleFS(dataset_type='test', shot=args.shot, transform=t
 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,
                                          shuffle=False, num_workers=args.workers)
 
-
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.model = torchvision.models.resnet18(pretrained=True)
-        self.model.fc = nn.Sequential(
-            # nn.Linear(512, 64)
-            # nn.Dropout(p=0.9),
-        )
-        self.loss = ArcLoss(512, 200)
-
-    def forward(self, input, label):
-        feature = self.model(input)
-        similarity = self.loss.linear(feature)
-        output = self.loss(feature, label)
-        return output, similarity
+model = torchvision.models.resnet18(pretrained=True)
+model.fc = nn.Sequential(
+    nn.Dropout(p=0.9),
+    nn.Linear(512, 200)
+)
 
 
 if __name__ == '__main__':
-    model = Net().cuda()
-    opt = optim.Adam(model.parameters(), lr=args.lr_max)
-    criterion = FocalLoss(200, gamma=2)
+    model.cuda()
+    criterion = nn.CrossEntropyLoss()
+    # criterion = FocalLoss()
+    # criterion = LabelSmoothingLoss(200, 0.005)
+    opt = optim.Adam(model.parameters(), lr=args.lr_max, weight_decay=0.001)
+    # opt = optim.Adam(model.parameters(), lr=args.lr_max)
     scaler = torch.cuda.amp.GradScaler()
     lr_schedule = lambda t: np.interp([t], [0, args.epochs * 2 // 5, args.epochs * 4 // 5, args.epochs],
                                       [0, args.lr_max, args.lr_max / 20.0, 0])[0]
@@ -121,14 +110,16 @@ if __name__ == '__main__':
         train_loss, train_acc, n, loss_value, lr = 0, 0, 0, 0, 0
         for i, (X, y) in enumerate(tqdm(trainloader, ncols=0)):
             model.train()
-            X, y = X.cuda(), y.cuda()
-
+            data, label_a, label_b, lam = cutmix_data(X, y)
+            data, label_a, label_b = data.cuda(), label_a.cuda(), label_b.cuda(),
             lr = lr_schedule(epoch + (i + 1) / len(trainloader))
             opt.param_groups[0].update(lr=lr)
 
             opt.zero_grad()
-            output, similarity = model(X, y)
-            loss = criterion(output, y)
+            with torch.cuda.amp.autocast():
+                outputs = model(data)
+                loss = mixup_criterion(criterion, outputs,
+                                       label_a, label_b, lam)
 
             scaler.scale(loss).backward()
             if args.clip_norm:
@@ -139,18 +130,19 @@ if __name__ == '__main__':
             scaler.update()
 
             train_loss += loss.item() * y.size(0)
-            train_acc += torch.eq(similarity.max(1)[1], y).sum().item()
+            train_acc += lam * torch.eq(outputs.max(1)[1], label_a).sum().item() + \
+                         (1-lam) * torch.eq(outputs.max(1)[1], label_b).sum().item()
             loss_value += loss.item()
             n += y.size(0)
 
         model.eval()
         test_acc, m = 0, 0
-
         with torch.no_grad():
             for i, (X, y) in enumerate(testloader):
                 X, y = X.cuda(), y.cuda()
-                output, similarity = model(X, y)
-                test_acc += torch.eq(similarity.max(1)[1], y).sum().item()
+                with torch.cuda.amp.autocast():
+                    output = model(X)
+                test_acc += torch.eq(output.max(1)[1], y).sum().item()
                 m += y.size(0)
 
         train_acc_list.append(train_acc / n)

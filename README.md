@@ -28,12 +28,24 @@ Fudan NNDL Final Project
 ## 代码文件概述
 
 `train.py`: ArcLoss版本，但是这个版本效果较差
+
 `train_origin.py`: 最初最基本的版本，效果最好
+
 `loss_functions.py`: 没用的loss function系列
+
 `load.py`: 保存load之后的数据文件，先跑这个再跑 `train_origin.py`可以节省时间
 
-`data/`:`dataset.py`: 最好的 dataloader
+`data/`: `dataset.py`: 最好的 dataloader
+
 `data/`: `dataset_black.py`: 一个黑白照片的尝试，但是结果欠佳
+
 `data/`: `dataset_masked.py`: 用了Bert之后的数据loader文件。
+
 `data/`: `loading.py`: 用于加载数据文件的接口
+
 `data/`: `FFD.py`: 没用的FFD变换
+
+## 主要观点
+
+* ImageNet 初始化有普遍的提升效果
+* 

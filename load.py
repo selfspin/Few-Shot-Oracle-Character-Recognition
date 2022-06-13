@@ -21,5 +21,13 @@ basic_transfrom = transforms.Compose([
 
 
 trainset = OracleFS_train(shot=1, transform=train_transform, enlarge=20)
-with open('data/basic_1_shot_train.pickle', 'wb') as f:
+with open('data/1_shot_train.pickle', 'wb') as f:
+    pickle.dump(trainset, f)
+
+trainset = OracleFS_train(shot=1, transform=train_transform, enlarge=20)
+with open('data/1_shot_train.pickle', 'wb') as f:
+    pickle.dump(trainset, f)
+
+trainset = OracleFS_train(shot=1, transform=train_transform, enlarge=20)
+with open('data/1_shot_train.pickle', 'wb') as f:
     pickle.dump(trainset, f)
