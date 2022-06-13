@@ -47,5 +47,9 @@ Fudan NNDL Final Project
 
 ## 主要观点
 
-* ImageNet 初始化有普遍的提升效果
+* **ImageNet 初始化有普遍的提升效果**
+* **数据扩增使得小样本训练结果更佳**
+* 传统方法更优，Bert对于数据分布改善不如传统方法有效
 * 
+* Dropout 有一定的提升效果
+* Arcloss\归一化特征方法对于此任务效果不佳

@@ -1,7 +1,7 @@
 import torch
 from torchvision import transforms
 import pickle
-from data.loading import OracleFS_train
+from data.loading import OracleFS_best
 
 train_transform = transforms.Compose([
     transforms.RandomResizedCrop(244, scale=(0.8, 1.0), ratio=(1.0, 1.0)),
@@ -20,14 +20,14 @@ basic_transfrom = transforms.Compose([
 ])
 
 
-trainset = OracleFS_train(shot=1, transform=train_transform, enlarge=20)
+trainset = OracleFS_best(shot=1, transform=train_transform, enlarge=20)
 with open('data/1_shot_train.pickle', 'wb') as f:
     pickle.dump(trainset, f)
 
-trainset = OracleFS_train(shot=1, transform=train_transform, enlarge=20)
-with open('data/1_shot_train.pickle', 'wb') as f:
+trainset = OracleFS_best(shot=1, transform=train_transform, enlarge=20)
+with open('data/3_shot_train.pickle', 'wb') as f:
     pickle.dump(trainset, f)
 
-trainset = OracleFS_train(shot=1, transform=train_transform, enlarge=20)
-with open('data/1_shot_train.pickle', 'wb') as f:
+trainset = OracleFS_best(shot=1, transform=train_transform, enlarge=20)
+with open('data/5_shot_train.pickle', 'wb') as f:
     pickle.dump(trainset, f)

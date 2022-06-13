@@ -90,6 +90,24 @@ model.fc = nn.Sequential(
     nn.Linear(512, 200)
 )
 
+# efficient net
+# model = torchvision.models.efficientnet_b0(pretrained=True)
+# model.classifier = nn.Sequential(
+#     torch.nn.Linear(1280, 200)
+# )
+
+
+# Dense Net
+# model = torchvision.models.efficientnet_b0(pretrained=True)
+# model.classifier = nn.Sequential(
+#     torch.nn.Linear(1280, 200)
+# )
+
+# VGG net
+# model = torchvision.models.vgg11_bn(pretrained=True)
+# num_feature = model.classifier[6].in_features
+# model.classifier[6] = torch.nn.Linear(num_feature, 200)
+
 
 if __name__ == '__main__':
     model.cuda()
