@@ -49,7 +49,7 @@ class OracleFS_best(Dataset):
 
 
 class OracleFS_combined(Dataset):
-    def __init__(self, shot=1, transform=basic_transfrom, enlarge=2):
+    def __init__(self, shot=1, transform=basic_transfrom, basic_enlarge=2, aug_enlarge=2):
         """
         dataset_type: ['train', 'test']
         """
@@ -60,7 +60,8 @@ class OracleFS_combined(Dataset):
         self.oracle_to_class = np.load('data/oracle_fs/img/oracle_to_class.npy', allow_pickle=True).item()
         self.data = []
         self.transform = transform
-        self.enlarge = enlarge - 1
+        self.basic_enlarge = basic_enlarge - 1
+        self.aug_enlarge = aug_enlarge
         num = 1
         for oracle in self.oracle_to_class.keys():
             path = os.path.join(self.root, oracle)
@@ -69,8 +70,8 @@ class OracleFS_combined(Dataset):
                 if not os.path.isdir(file):  # 判断是否是文件夹，不是文件夹才打开
                     img = Image.open(os.path.join(path, file)).convert('RGB')
                     self.data.append([basic_transfrom(img), self.oracle_to_class[oracle]])
-                    if enlarge > 0 and self.transform is not None:
-                        for _ in range(self.enlarge):
+                    if self.basic_enlarge > 0 and self.transform is not None:
+                        for _ in range(self.basic_enlarge):
                             tr_img = self.transform(img)
                             self.data.append([tr_img, self.oracle_to_class[oracle]])
 
@@ -80,9 +81,9 @@ class OracleFS_combined(Dataset):
             for file in files:
                 if not os.path.isdir(file):  # 判断是否是文件夹，不是文件夹才打开
                     img = Image.open(os.path.join(path, file)).convert('RGB')
-                    self.data.append([basic_transfrom(img), self.oracle_to_class[oracle]])
-                    if enlarge > 0 and self.transform is not None:
-                        for _ in range(self.enlarge):
+                    # self.data.append([basic_transfrom(img), self.oracle_to_class[oracle]])
+                    if self.aug_enlarge > 0 and self.transform is not None:
+                        for _ in range(self.aug_enlarge):
                             tr_img = self.transform(img)
                             self.data.append([tr_img, self.oracle_to_class[oracle]])
 
