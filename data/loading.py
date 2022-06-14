@@ -1,12 +1,9 @@
-import torchvision.transforms
 from PIL import Image
 from torch.utils.data import Dataset
-from data.FFD import ffd
 import numpy as np
 import os
 import torch
 import torchvision.transforms as transforms
-import pickle
 
 basic_transfrom = transforms.Compose([
     transforms.Resize((244, 244)),

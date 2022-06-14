@@ -38,10 +38,6 @@ class OracleFS_Masked(Dataset):
                     img = Image.open(os.path.join(path, file)).convert('RGB')
                     for _ in range(self.enlarge):
                         self.data.append([img, self.oracle_to_class[oracle]])
-                    # if enlarge > 0 and self.transform is not None:
-                    #     for _ in range(self.enlarge):
-                    #         tr_img = self.transform(img)
-                    #         self.data.append([tr_img, self.oracle_to_class[oracle]])
 
             # masked process image
             path = os.path.join(self.root_masked, oracle)

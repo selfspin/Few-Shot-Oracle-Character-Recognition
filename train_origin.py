@@ -41,7 +41,7 @@ parser.add_argument('--enlarge', default=20, type=int)
 parser.add_argument('--wd', default=0.005, type=float)
 parser.add_argument('--clip-norm', default=True, action='store_true')
 parser.add_argument('--epochs', default=200, type=int)
-parser.add_argument('--lr-max', default=0.001, type=float)
+parser.add_argument('--lr-max', default=0.0007, type=float)
 parser.add_argument('--workers', default=2, type=int)
 
 parser.add_argument('--device', default='0', type=str)
@@ -81,7 +81,7 @@ print("Loading training data ...")
 #                                                enlarge=args.enlarge, Normalize=False)
 # trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=train_transform,
 #                                  enlarge=args.enlarge, Normalize=False)
-with open('data/_shot_train.pickle', 'rb') as f:
+with open('data/1_shot_train.pickle', 'rb') as f:
     trainset = pickle.load(f)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size,
                                           shuffle=True, num_workers=args.workers)

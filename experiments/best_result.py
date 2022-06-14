@@ -96,7 +96,6 @@ model.fc = nn.Sequential(
 #     torch.nn.Linear(1280, 200)
 # )
 
-
 # Dense Net
 # model = torchvision.models.efficientnet_b0(pretrained=True)
 # model.classifier = nn.Sequential(
