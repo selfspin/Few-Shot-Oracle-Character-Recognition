@@ -7,6 +7,7 @@ import numpy as np
 import time
 import argparse
 import os
+import pickle
 import random
 import torch.backends.cudnn
 from torchvision import transforms
@@ -73,8 +74,10 @@ test_transfrom = transforms.Compose([
 ])
 
 print("Loading training data ...")
-trainset = data.dataset_masked.OracleFS_Masked(shot=args.shot, transform=train_transform,
-                                               enlarge=0, Normalize=False)
+with open('data/1_shot_train_combine.pickle', 'rb') as f:
+    trainset = pickle.load(f)
+# trainset = data.dataset_masked.OracleFS_Masked(shot=args.shot, transform=train_transform,
+#                                                enlarge=0, Normalize=False)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size,
                                           shuffle=True, num_workers=args.workers)
 
@@ -148,7 +151,7 @@ if __name__ == '__main__':
         lr_list.append(lr)
 
         print(
-            f'[{args.shot} Shot] Epoch: {epoch} | Train Acc: {train_acc / n:.4f},'
+            f'[{args.shot} Shot Combine] Epoch: {epoch} | Train Acc: {train_acc / n:.4f},'
             f'Test Acc: {test_acc / m:.4f}, loss: {loss_value / n:.4f}, '
             f'Time: {time.time() - start:.1f}, lr: {lr:.6f}')
 
