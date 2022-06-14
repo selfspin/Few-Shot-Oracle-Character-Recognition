@@ -41,7 +41,7 @@ parser.add_argument('--enlarge', default=20, type=int)
 parser.add_argument('--wd', default=0.005, type=float)
 parser.add_argument('--clip-norm', default=True, action='store_true')
 parser.add_argument('--epochs', default=200, type=int)
-parser.add_argument('--lr-max', default=0.0007, type=float)
+parser.add_argument('--lr-max', default=0.001, type=float)
 parser.add_argument('--workers', default=2, type=int)
 
 parser.add_argument('--device', default='0', type=str)
@@ -79,10 +79,10 @@ test_transfrom = transforms.Compose([
 print("Loading training data ...")
 # trainset = data.dataset_masked.OracleFS_Masked(shot=args.shot, transform=train_transform,
 #                                                enlarge=args.enlarge, Normalize=False)
-# trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=train_transform,
-#                                  enlarge=args.enlarge, Normalize=False)
-with open('data/1_shot_train.pickle', 'rb') as f:
-    trainset = pickle.load(f)
+trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=train_transform,
+                                 enlarge=args.enlarge, Normalize=False)
+# with open('data/1_shot_train.pickle', 'rb') as f:
+#     trainset = pickle.load(f)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size,
                                           shuffle=True, num_workers=args.workers)
 
@@ -102,7 +102,6 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,
 #         # --------------------------- cos(theta) & phi(theta) ---------------------------
 #         return F.linear(F.normalize(input), self.weight)
 model = torchvision.models.resnet18(pretrained=True)
-# model.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
 model.fc = nn.Sequential(
     nn.Dropout(p=0.9),
     nn.Linear(512, 200)
