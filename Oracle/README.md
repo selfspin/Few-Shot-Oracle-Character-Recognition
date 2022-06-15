@@ -36,9 +36,9 @@ Fudan NNDL Final Project
 
 先运行`data/getclass.py`将每个字对应类别
 
-然后再根目录下面运行`load.py`得到预处理的数据文件（先要运行Bert）
+然后再根目录下面运行`load.py`得到预处理的数据文件（先要运行Bert， 记得解压`data/Generate_oracle_fs.tar.gz`）
 
-再运行`train.py`. 可以通过以下参数更改`shot`
+再运行`train.py`. 可以通过以下参数更改`shot`.
 
 ```bash
 python train.py --shot=1
