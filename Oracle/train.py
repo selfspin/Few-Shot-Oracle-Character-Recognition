@@ -89,7 +89,7 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,
 
 model = torchvision.models.resnet18(pretrained=False)
 model.fc = nn.Sequential(
-    nn.Dropout(p=0),
+    nn.Dropout(p=0.9),
     nn.Linear(512, 200)
 )
 
