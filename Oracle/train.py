@@ -77,7 +77,7 @@ test_transfrom = transforms.Compose([
 ])
 
 print("Loading training data ...")
-with open('data/1_shot_train_combine.pickle', 'rb') as f:
+with open('data/{}_shot_train_combine.pickle'.format(args.shot), 'rb') as f:
     trainset = pickle.load(f)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size,
                                           shuffle=True, num_workers=args.workers)
