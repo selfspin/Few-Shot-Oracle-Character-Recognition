@@ -38,7 +38,7 @@ Fudan NNDL Final Project
 
 然后再根目录下面运行`load.py`得到预处理的数据文件（先要运行Bert）
 
-再运行`train.py`. 可以通过以下参数更改`shot` 和 `combination` 的比例
+再运行`train.py`. 可以通过以下参数更改`shot`
 
 ```bash
 python train.py --shot=1
