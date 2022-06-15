@@ -32,6 +32,8 @@ Fudan NNDL Final Project
 └── train.py
 ```
 
+请按此结构存放数据集
+
 ## 运行
 
 先运行`data/getclass.py`将每个字对应类别
