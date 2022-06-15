@@ -8,19 +8,37 @@ Fudan NNDL Final Project
 ## 文件组织形式
 
 ```
-.
 ├── data
+│   ├── dataset_black_masked.py
+│   ├── dataset_black.py
+│   ├── dataset_masked.py
 │   ├── dataset.py
+│   ├── FFD.py
 │   ├── getclass.py
+│   ├── loading.py
+│   ├── Generate_oracle_fs
 │   ├── Oracle-50K
 │   ├── oracle_fs
 │   └── oracle_source
+├── experiments
+│   ├── Arcface_loss.py
+│   ├── best_result.py
+│   ├── cutmix_result.py
+│   ├── loss_functions.py
+│   └── masked_results.py
+├── load.py
+├── masked_results.py
 ├── output
-│   └── 1_shot.jpg
+│   ├── 1_shot.jpg
+│   ├── 3_shot.jpg
+│   ├── 5_shot.jpg
+│   ├── masked_results.py
+│   ├── nopretrain_1_shot.jpg
+│   └── pretrain.pth
+├── README.md
 ├── test.py
-├── train.py
-├── try.py
-└── visualize.py
+├── train_origin.py
+└── train.py
 ```
 
 ## 运行
