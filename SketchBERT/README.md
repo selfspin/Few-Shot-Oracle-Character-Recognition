@@ -10,6 +10,8 @@ You can get the pretrained model on [Google Drive](https://drive.google.com/file
 
 然后运行`generate_dataset.py`文件，获得生成的数据集
 
+若路径报错需创建路径空文件夹
+
 ## Training
 
 训练模型
