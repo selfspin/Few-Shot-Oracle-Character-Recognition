@@ -1,7 +1,11 @@
 # Few-Shot-Oracle-Character-Recognition
 Fudan NNDL Final Project
 
-文件组织形式
+![](Classification-Network/output/process.png)
+
+![](Classification-Network/output/augmentation.png)
+
+## 文件组织形式
 
 ```
 .
