@@ -77,13 +77,8 @@ test_transfrom = transforms.Compose([
 ])
 
 print("Loading training data ...")
-# trainset = data.dataset_masked.OracleFS_Masked(shot=args.shot, transform=train_transform,
-#                                                enlarge=args.enlarge, Normalize=False)
-# trainset = data.dataset.OracleFS(dataset_type='train', shot=args.shot, transform=train_transform,
-#                                  enlarge=args.enlarge, Normalize=False)
-# with open('data/1_shot_train_combine.pickle', 'rb') as f:
-#     trainset = pickle.load(f)
-trainset = data.loading.OracleFS_combined(shot=5, transform=train_transform, basic_enlarge=0, aug_enlarge=2)
+with open('data/1_shot_train_combine.pickle', 'rb') as f:
+    trainset = pickle.load(f)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=args.batch_size,
                                           shuffle=True, num_workers=args.workers)
 
@@ -92,16 +87,6 @@ testset = data.dataset.OracleFS(dataset_type='test', shot=args.shot, transform=t
 testloader = torch.utils.data.DataLoader(testset, batch_size=args.batch_size,
                                          shuffle=False, num_workers=args.workers)
 
-# # RESNET
-# class similarity(nn.Module):
-#     def __init__(self, in_features, out_features):
-#         super(similarity, self).__init__()
-#         self.weight = torch.nn.Parameter(torch.FloatTensor(out_features, in_features))
-#         nn.init.xavier_uniform_(self.weight)
-#
-#     def forward(self, input):
-#         # --------------------------- cos(theta) & phi(theta) ---------------------------
-#         return F.linear(F.normalize(input), self.weight)
 model = torchvision.models.resnet18(pretrained=False)
 model.fc = nn.Sequential(
     nn.Dropout(p=0),
@@ -200,10 +185,7 @@ class FocalLoss(nn.Module):
 if __name__ == '__main__':
     model.cuda()
     criterion = nn.CrossEntropyLoss()
-    # criterion = FocalLoss()
-    # criterion = LabelSmoothingLoss(200, 0.005)
     opt = optim.Adam(model.parameters(), lr=args.lr_max, weight_decay=0.001)
-    # opt = optim.Adam(model.parameters(), lr=args.lr_max)
     scaler = torch.cuda.amp.GradScaler()
     lr_schedule = lambda t: np.interp([t], [0, args.epochs * 2 // 5, args.epochs * 4 // 5, args.epochs],
                                       [0, args.lr_max, args.lr_max / 20.0, 0])[0]
