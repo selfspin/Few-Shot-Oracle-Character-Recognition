@@ -1,0 +1,87 @@
+trainer: sketch_transformer
+# Training Setting
+batch_size: 10  # 10
+num_iterations: 2000000 # 0.3*
+num_epoch: 200
+learning_rate: 0.0001
+gpu_ids: [1]
+task_types: ['maskrec'] # maskrec, maskgmm, maskdisc, sketchcls, sketchclsinput, sketchretrieval, sbir
+get_type: 'single' # 'single'
+mask_task_type: 'task'
+
+load_pretrained: 'pretrained' # [scratch,continue,pretrained]
+which_pretrained: ['enc_net', 'task_net'] # enc_opt
+restore_checkpoint_path: 'checkpoint/best_ckpt.pth.tar'
+
+dataset: 'quickdraw_memmap' #'quickdraw_memmap' #quickdraw_sbir, quickdraw_memmap tuberlin_memmap
+num_train_samples: 20000000
+num_val_samples: 10
+num_display_samples: 2000
+shuffle_val: False
+loader_num_workers: 4
+sum_path: 'Oracle_fs/memmap_sum.txt'
+image_sum_path: 'QuickDraw/sbir_image_sum.txt'
+offset_path: 'Oracle_fs/offsets.npz'
+cls_limit_path: ''
+mode: 'train'
+max_length: 250
+max_size: [128, 128]
+image_size: 224
+type_size: 3
+mask_prob: 0.85 # 0.85
+limit: 1000
+stroke_type: 'stroke-5'
+input_is_complete: False
+max_cls_cache: 345 # quickdraw 345 tuberlin
+normalization_type: 'max_scale'
+max_scale_factor: 10
+each_max_samples: 5000
+each_image_max_samples: 100
+each_val_samples: 1000
+
+# Output and Save options
+print_every:  100
+log_dir: 'sketch_albert_qd_struct_8_12_768_test_mask_max_scale'
+
+checkpoint_every: 2000
+save_model_every: 20000
+
+# Transformer settings
+encoder_type: 'Ori'
+layers_setting: [[12, 768, 3072],[12, 768, 3072],[12, 768, 3072],[12, 768, 3072],[12, 768, 3072],[12, 768, 3072],[12, 768, 3072],[12, 768, 3072]]
+
+output_attentions: False
+output_all_states: False
+keep_multihead_output: False
+input_dim: 5
+cls_dim: 345
+latent_dim: 128
+rel_feat_dim: 128
+M: 16
+embed_layers_setting: [128,256,512] #[64,128],[128,256,512]
+rel_layers_setting: []
+cls_layers_setting: []
+rec_layers_setting: [512,256,128] #[128,64],[512,256,128]
+sketch_embed_type: 'linear'
+embed_pool_type: 'sum'
+model_type: 'albert'
+position_type: 'learn' #'learn'
+segment_type: 'none'
+atten_type: 'single' #
+attention_norm_type: 'LN'
+inter_activation: 'gelu'
+attention_dropout_prob: 0.5
+hidden_dropout_prob: 0.5
+output_dropout_prob: 0.5
+triplet_margin: 2.0
+gamma: 0.1
+
+# Losses weights
+mask_gmm_weight: 1
+rec_gmm_weight: 0
+mask_axis_weight: 1
+rec_axis_weight: 0
+mask_type_weight: 1
+rec_type_weight: 0
+prediction_weight: 1
+triplet_weight: 1
