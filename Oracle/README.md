@@ -8,36 +8,27 @@ Fudan NNDL Final Project
 ## 文件组织形式
 
 ```
-├── data
-│   ├── dataset_black_masked.py
-│   ├── dataset_black.py
-│   ├── dataset_masked.py
-│   ├── dataset.py
-│   ├── FFD.py
-│   ├── getclass.py
-│   ├── loading.py
-│   ├── Generate_oracle_fs
-│   ├── Oracle-50K
-│   ├── oracle_fs
-│   └── oracle_source
-├── experiments
-│   ├── Arcface_loss.py
-│   ├── best_result.py
-│   ├── cutmix_result.py
-│   ├── loss_functions.py
-│   └── masked_results.py
-├── load.py
-├── masked_results.py
-├── output
-│   ├── 1_shot.jpg
-│   ├── 3_shot.jpg
-│   ├── 5_shot.jpg
-│   ├── masked_results.py
-│   ├── nopretrain_1_shot.jpg
-│   └── pretrain.pth
-├── README.md
-├── test.py
-├── train_origin.py
+├── data 
+│   ├── dataset_masked.py 
+│   ├── dataset.py 
+│   ├── getclass.py 
+│   ├── loading.py 
+│   ├── Generate_oracle_fs 
+│   ├── Oracle-50K 
+│   ├── oracle_fs 
+│   └── oracle_source 
+├── experiments 
+│   ├── Arcface_loss.py 
+│   ├── best_result.py 
+│   ├── cutmix_result.py 
+│   ├── loss_functions.py 
+│   └── masked_results.py 
+├── load.py 
+├── masked_results.py 
+├── output 
+│   ├── augmentation.png
+│   └── process.jpg 
+├── README.md 
 └── train.py
 ```
 
@@ -45,7 +36,13 @@ Fudan NNDL Final Project
 
 先运行`data/getclass.py`将每个字对应类别
 
-再运行`train.py`
+然后再根目录下面运行`load.py`得到预处理的数据文件（先要运行Bert）
+
+再运行`train.py`. 可以通过以下参数更改`shot` 和 `combination` 的比例
+
+```bash
+python train.py --shot=1
+```
 
 ## 代码文件概述
 
